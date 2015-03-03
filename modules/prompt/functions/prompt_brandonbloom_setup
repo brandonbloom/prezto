@@ -1,0 +1,65 @@
+function prompt_brandonbloom_precmd {
+  vcs_info
+}
+
+function prompt_brandonbloom_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+
+  # Load required functions.
+  autoload -Uz add-zsh-hook
+  autoload -Uz vcs_info
+
+  # Add hook for calling vcs_info before each command.
+  add-zsh-hook precmd prompt_brandonbloom_precmd
+
+  # Customizable parameters.
+  local max_path_chars=30
+  local success_color='%F{071}'
+  local failure_color='%F{124}'
+  local vcs_info_color='%F{242}'
+
+  # Set vcs_info parameters.
+  zstyle ':vcs_info:*' enable bzr git hg svn
+  zstyle ':vcs_info:*' check-for-changes true
+  zstyle ':vcs_info:*' unstagedstr '!'
+  zstyle ':vcs_info:*' stagedstr '+'
+  zstyle ':vcs_info:*' actionformats "(%b%u%c %a)"
+  zstyle ':vcs_info:*' formats " (%b%u%c)"
+  zstyle ':vcs_info:*' nvcsformats ""
+
+  # Define prompts.
+  PROMPT="%(?.${success_color}.${failure_color})${SSH_TTY:+[%n@%m]}%B%~"'${vcs_info_msg_0_}'" %(!.#.$)%b%f "
+  RPROMPT="${vcs_info_color}"'${vcs_info_msg_1_}'"%f"
+}
+
+prompt_brandonbloom_setup "$@"
+
+# OLD THEME HERE
+#
+#   local default_user_name='brandon'
+#
+#   local prompt_user="%{$fg[red]%}%n%{$reset_color%}"
+#   local prompt_host="%{$fg[green]%}%m%{$reset_color%}"
+#   local prompt_dir="%{$fg[blue]%}%~%{$reset_color%}"
+#
+#   if [[ -z $SSH_CONNECTION ]] {
+#       if [[ $USER == $default_user_name ]] {
+#           PROMPT=""
+#       } else {
+#           PROMPT="${prompt_user} %B@:%b "
+#       }
+#   } else {
+#       if [[ $USER == $default_user_name ]] {
+#           PROMPT="${prompt_host} %B:%b "
+#       } else {
+#           PROMPT="${prompt_user} %B@%b ${prompt_host} %B:%b "
+#       }
+#   }
+#
+#   PROMPT="${PROMPT}${prompt_dir} \$(git_prompt_info)%B$%b "
+#   RPROMPT=''
+#
+#   ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[yellow]%}("
+#   ZSH_THEME_GIT_PROMPT_SUFFIX=")%{$reset_color%} "
